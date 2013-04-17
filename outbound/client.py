@@ -1,6 +1,9 @@
 import os
 import json
-
+try:
+  from google.appengine.api import urlfetch
+except:
+  pass
 try:
   import requests
 except:
@@ -22,10 +25,8 @@ class Client(object):
       headers={'Content-Type': 'application/json'}
     )
 
-  def identify(self, user_id, traits={}, with_gae=False):
-    fetch = self.fetch_response if not with_gae else self.fetch_gae_response
-
-    resp = fetch(
+  def identify(self, user_id, traits={}):
+    resp = self.fetch_response(
       "%s/%s" % (API_SERVER, IDENTIFY), json.dumps({
         "api_key": self._api_key,
         "user_id": user_id,
@@ -38,14 +39,15 @@ class Client(object):
       return resp.content
 
   def track(self, user_id, event, payload={}):
-    resp = requests.post("%s/%s" % (API_SERVER, TRACK), data=json.dumps({
-      "api_key": self._api_key,
-      "user_id": user_id,
-      "event": event,
-      "payload": payload
-    }), headers={
-      "Content-Type": "application/json"
-    })
+    resp = self.fetch_response(
+      "%s/%s" % (API_SERVER, TRACK),
+      json.dumps({
+        "api_key": self._api_key,
+        "user_id": user_id,
+        "event": event,
+        "payload": payload
+      }))
+
     if not resp.status_code == 200:
       return False
     else:
@@ -57,7 +59,7 @@ class GAEClient(Client):
   def fetch_response(self, url, payload):
     return urlfetch.fetch(
       url,
-      data=payload,
+      payload=payload,
       method=urlfetch.POST,
       headers={
         "Content-Type": "application/json"
