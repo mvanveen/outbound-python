@@ -1,7 +1,7 @@
 outbound-python
 ===============
 
-Python library for [Outbound](http://www.outbound.io/docs)
+Python library for [Outbound](http://www.outbound.io/docs).  outbound-python is MIT licensed.
 
 ### [Identify](http://www.outbound.io/docs/identify)
 These are usually in places where your user objects are [created or updated](http://www.outbound.io/docs/identify).
